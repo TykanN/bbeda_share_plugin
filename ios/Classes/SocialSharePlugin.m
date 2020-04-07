@@ -61,11 +61,21 @@
     _result = result;
   if ([@"getPlatformVersion" isEqualToString:call.method]) {
     result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
-  } else if ([@"shareToFeedInstagram" isEqualToString:call.method]) {
+  } else if ([@"shareToApps" isEqualToString:call.method]) {
+        [self instagramShare:call.arguments[@"path"]];
+        result(nil);
+    } else if ([@"shareToInstagram" isEqualToString:call.method]) {
       NSURL *instagramURL = [NSURL URLWithString:@"instagram://app"];
       if([[UIApplication sharedApplication] canOpenURL:instagramURL]) {
-          [self instagramShare:call.arguments[@"path"]];
-          result(nil);
+        PHFetchOptions *options = [[PHFetchOptions alloc] init];
+        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+        options.fetchLimit = 1;
+        PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsWithOptions:options];
+
+        NSURL *url = [NSURL URLWithString:@"instagram://library?LocalIdentifier=\(assetsFetchResult.firstObject.localIdentifier)"];
+        [[UIApplication sharedApplication] openURL:url];
+      
+        result(nil);
       } else {
           NSString *instagramLink = @"itms-apps://itunes.apple.com/us/app/apple-store/id389801252";
           if (@available(iOS 10.0, *)) {

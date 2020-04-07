@@ -7,14 +7,15 @@ typedef Future<dynamic> OnErrorHandler(String error);
 typedef Future<dynamic> OnSuccessHandler(String postId);
 
 class SocialSharePlugin {
-  static const MethodChannel _channel = const MethodChannel('social_share_plugin');
+  static const MethodChannel _channel =
+      const MethodChannel('social_share_plugin');
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
     return version;
   }
 
-  static Future<void> shareToFeedInstagram({
+  static Future<void> shareToInstagram({
     String type = 'image/*',
     @required String path,
     OnSuccessHandler onSuccess,
@@ -30,7 +31,29 @@ class SocialSharePlugin {
           throw UnsupportedError("Unknown method called");
       }
     });
-    return _channel.invokeMethod('shareToFeedInstagram', <String, dynamic>{
+    return _channel.invokeMethod('shareToInstagram', <String, dynamic>{
+      'type': type,
+      'path': path,
+    });
+  }
+
+  static Future<void> shareToApps({
+    String type = 'image/*',
+    @required String path,
+    OnSuccessHandler onSuccess,
+    OnCancelHandler onCancel,
+  }) async {
+    _channel.setMethodCallHandler((call) {
+      switch (call.method) {
+        case "onSuccess":
+          return onSuccess(call.arguments);
+        case "onCancel":
+          return onCancel();
+        default:
+          throw UnsupportedError("Unknown method called");
+      }
+    });
+    return _channel.invokeMethod('shareToApps', <String, dynamic>{
       'type': type,
       'path': path,
     });
