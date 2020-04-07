@@ -62,7 +62,7 @@
   if ([@"getPlatformVersion" isEqualToString:call.method]) {
     result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
   } else if ([@"shareToApps" isEqualToString:call.method]) {
-        [self instagramShare:call.arguments[@"path"]];
+        [self appShare:call.arguments[@"path"]];
         result(nil);
     } else if ([@"shareToInstagram" isEqualToString:call.method]) {
       NSURL *instagramURL = [NSURL URLWithString:@"instagram://app"];
@@ -151,13 +151,13 @@
     [FBSDKShareDialog showFromViewController:controller withContent:content delegate:self];
 }
 
-- (void)instagramShare:(NSString*)imagePath {
+- (void)appShare:(NSString*)imagePath {
     NSError *error = nil;
     UIViewController* controller = [UIApplication sharedApplication].delegate.window.rootViewController;
-    [[NSFileManager defaultManager] moveItemAtPath:imagePath toPath:[NSString stringWithFormat:@"%@.igo", imagePath] error:&error];
-    NSURL *path = [NSURL URLWithString:[NSString stringWithFormat:@"file://%@.igo", imagePath]];
+    [[NSFileManager defaultManager] moveItemAtPath:imagePath toPath:[NSString stringWithFormat:@"%@", imagePath] error:&error];
+    NSURL *path = [NSURL URLWithString:[NSString stringWithFormat:@"file://%@", imagePath]];
     _dic = [UIDocumentInteractionController interactionControllerWithURL:path];
-    _dic.UTI = @"com.instagram.exclusivegram";
+    _dic.UTI = @"com.instagram.photo";
     if (![_dic presentOpenInMenuFromRect:CGRectZero inView:controller.view animated:TRUE]) {
         NSLog(@"Error sharing to instagram");
     };
