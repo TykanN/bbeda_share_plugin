@@ -134,7 +134,7 @@ public class SocialSharePlugin
             case "getPlatformVersion":
                 result.success("Android " + android.os.Build.VERSION.RELEASE);
                 break;
-            case "shareToFeedInstagram":
+            case "shareToInstagram":
                 try {
                     pm.getPackageInfo(INSTAGRAM_PACKAGE_NAME, PackageManager.GET_ACTIVITIES);
                     instagramShare(call.<String>argument("type"), call.<String>argument("path"));
